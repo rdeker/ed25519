@@ -2,7 +2,7 @@
 #include "fe.h"
 
 void ed25519_key_exchange(unsigned char *shared_secret, const unsigned char *public_key, const unsigned char *private_key) {
-    unsigned char e[32];
+    unsigned char e[64];
     unsigned int i;
     
     fe x1;
@@ -16,14 +16,11 @@ void ed25519_key_exchange(unsigned char *shared_secret, const unsigned char *pub
     int pos;
     unsigned int swap;
     unsigned int b;
-
-    /* copy the private key and make sure it's valid */
-    for (i = 0; i < 32; ++i) {
-        e[i] = private_key[i];
-    }
+    
+    sha512(private_key, 32, e);
 
     e[0] &= 248;
-    e[31] &= 63;
+    e[31] &= 127;
     e[31] |= 64;
 
     /* unpack the public key and convert edwards to montgomery */
